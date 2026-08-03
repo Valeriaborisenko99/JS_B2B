@@ -1,6 +1,8 @@
 import { defineConfig } from '@playwright/test';
 import 'dotenv/config';
 
+const isCI = process.env.CI === 'true';
+
 export default defineConfig({
   testDir: './tests',
   testMatch: '**/*.spec.{js,cjs}',
@@ -21,8 +23,8 @@ export default defineConfig({
       name: 'chromium',
       use: {
         browserName: 'chromium',
-        channel: 'msedge',
-        headless: false,
+        channel: isCI ? undefined : 'msedge',
+        headless: isCI ? true : false,
       },
     },
   ],

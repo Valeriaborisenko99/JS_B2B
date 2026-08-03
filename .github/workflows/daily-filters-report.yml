@@ -1,0 +1,48 @@
+name: Daily Filters Report
+
+on:
+  schedule:
+    # 09:00 МСК каждый рабочий день (Пн-Пт). GitHub Actions использует UTC, МСК = UTC+3 → 06:00 UTC
+    - cron: '0 6 * * 1-5'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  PLAYWRIGHT_BROWSERS_PATH: /root/.cache/ms-playwright
+  PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-report.json
+
+jobs:
+  filters-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    container:
+      image: node:${{ env.NODE_VERSION }}
+
+    steps:
+      - name: Установка git
+        uses: actions/checkout@v4
+
+      - name: Установка зависимостей
+        run: |
+          npm ci
+          npx playwright install chromium
+
+      - name: Запуск тестов фильтров
+        run: |
+          set +e
+          npx playwright test "tests/Tours with flights/Filters/Filters on the Tours with Flights page.spec.js" --reporter=json
+          echo "exit_code=$?" >> $GITHUB_ENV
+
+      - name: Отправка отчёта в Mattermost
+        run: node scripts/send-filter-report.mjs
+        env:
+          MATTERMOST_WEBHOOK: https://band.wb.ru/hooks/ybk7a7cgfir8zrprk63r4d8rrh
+          REPORT_FILE: playwright-report.json
+
+      - name: Сохранение отчёта
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-json
+          path: playwright-report.json
+          retention-days: 7

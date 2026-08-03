@@ -85,6 +85,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
         return;
       }
 
+      console.log(`✅ Выполнен поиск по фильтру Город отправления (${cityName} — код ${expectedCode})`);
       expect(resultText).toContain(expectedCode);
     });
   }
@@ -125,6 +126,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
         return [...new Set(Array.from(rows).map(r => r.getAttribute('data-state')))];
       });
 
+      console.log(`✅ Выполнен поиск по фильтру Страна (${countryName})`);
       expect(states.length).toBe(1);
       expect(states[0]).toBe(countryValue);
     });
@@ -161,6 +163,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
       const tourTexts = await getTourTexts(page);
       expect(tourTexts.length).toBeGreaterThan(0);
 
+      console.log(`✅ Выполнен поиск по фильтру Тип тура (${ek} + ${country})`);
+
       for (const text of tourTexts) {
         expect(text).toContain(ek);
       }
@@ -196,6 +200,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
 
     const resultText = await searchPage.getResultText();
     const lowerText = resultText.toLowerCase();
+
+    console.log('✅ Выполнен поиск по фильтру Тип продукта (Статика)');
 
     expect(lowerText).not.toContain('невозвратный');
     expect(lowerText).not.toContain('dynamic package');
@@ -234,6 +240,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     const rowData = await getTourAndPriceTexts(page);
     expect(rowData.length).toBeGreaterThan(0);
 
+    console.log('✅ Выполнен поиск по фильтру Тип продукта (Динамика + ОАЭ)');
+
     for (const row of rowData) {
       expect(row.tourText.toLowerCase()).toContain('dynamic package');
     }
@@ -271,6 +279,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     const rowData = await getTourAndPriceTexts(page);
     expect(rowData.length).toBeGreaterThan(0);
 
+    console.log('✅ Выполнен поиск по фильтру Авиаперелет (Чартер/блочная перевозка)');
+
     for (const row of rowData) {
       expect(row.priceText).not.toContain('gds');
       expect(row.tourText.toLowerCase()).not.toContain('gds');
@@ -302,6 +312,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
 
     const rowData = await getTourAndPriceTexts(page);
     expect(rowData.length).toBeGreaterThan(0);
+
+    console.log('✅ Выполнен поиск по фильтру Авиаперелет (GDS)');
 
     for (const row of rowData) {
       expect(row.priceText).toContain('gds');
@@ -355,6 +367,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     const tourTexts = await getTourTexts(page);
     expect(tourTexts.length).toBeGreaterThan(0);
 
+    console.log(`✅ Выполнен поиск по фильтру Тур (${selectedTour.name})`);
+
     for (const text of tourTexts) {
       expect(text).toContain(selectedTour.name);
     }
@@ -397,6 +411,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
       });
 
       expect(tourCells.length).toBeGreaterThan(0);
+
+      console.log(`✅ Выполнен поиск по фильтру Программа (${name})`);
 
       for (const text of tourCells) {
         expect(text.toLowerCase()).toContain(expectedKeyword.toLowerCase());
@@ -576,6 +592,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
       }
 
       found = true;
+      console.log(`✅ Выполнен поиск по фильтру Даты вылета (${dates.beg} — ${dates.end})`);
       await page.waitForTimeout(10000);
       break;
     }
@@ -655,6 +672,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
 
     expect(nightsValues.length).toBeGreaterThan(0);
 
+    console.log(`✅ Выполнен поиск по фильтру Количество ночей (от ${nightsFrom} до ${nightsTill})`);
+
     for (const nights of nightsValues) {
       expect(nights).toBeGreaterThanOrEqual(nightsFrom);
       expect(nights).toBeLessThanOrEqual(nightsTill);
@@ -719,6 +738,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
 
     expect(hotelRoomTexts.length).toBeGreaterThan(0);
 
+    console.log(`✅ Выполнен поиск по фильтру Взрослых (${selectedOption.value})`);
+
     const selectedValue = parseInt(selectedOption.value, 10);
 
     for (const text of hotelRoomTexts) {
@@ -749,6 +770,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     await setChild(page, 0);
     const texts = await searchAndGetTexts(page, searchPage);
     if (!texts) { test.skip(true, 'Нет туров для Турции'); return; }
+    console.log('✅ Выполнен поиск по фильтру Дети (0 детей)');
     for (const text of texts) {
       expect(text).toContain('2AD');
       expect(text).not.toMatch(/\dCHD/i);
@@ -765,6 +787,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     await setAge(page, 0, 1);
     const texts = await searchAndGetTexts(page, searchPage);
     if (!texts) { test.skip(true, 'Нет туров для Турции с 1 ребёнком (возраст 1)'); return; }
+    console.log('✅ Выполнен поиск по фильтру Дети (1 ребёнок, возраст 1)');
     for (const text of texts) {
       expect(text).toMatch(/2AD|3AD/);
     }
@@ -780,6 +803,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     await setAge(page, 0, 6);
     const texts = await searchAndGetTexts(page, searchPage);
     if (!texts) { test.skip(true, 'Нет туров для Турции с 1 ребёнком (возраст 6)'); return; }
+    console.log('✅ Выполнен поиск по фильтру Дети (1 ребёнок, возраст 6)');
     for (const text of texts) {
       const has2AD1CHD = /2AD.*1CHD/i.test(text);
       const has3AD = /3AD/.test(text);
@@ -799,6 +823,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     await setAge(page, 1, 7);
     const texts = await searchAndGetTexts(page, searchPage);
     if (!texts) { test.skip(true, 'Нет туров для Турции с 2 детьми (возраст 0 и 7)'); return; }
+    console.log('✅ Выполнен поиск по фильтру Дети (2 детей, возраст 0 и 7)');
     for (const text of texts) {
       const has2ADwithCHD = /2AD.*\dCHD/i.test(text);
       const has3ADor4AD = /[34]AD/.test(text);
@@ -818,6 +843,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     await setCurrency(page, 'RUB');
     const prices = await searchAndGetPrices(page, searchPage);
     if (!prices) { test.skip(true, 'Нет туров для Турции'); return; }
+    console.log('✅ Выполнен поиск по фильтру Валюта (RUB)');
     for (const price of prices) {
       expect(price).toMatch(/RUB$/);
     }
@@ -830,6 +856,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     await setCurrency(page, 'EUR');
     const prices = await searchAndGetPrices(page, searchPage);
     if (!prices) { test.skip(true, 'Нет туров для Турции'); return; }
+    console.log('✅ Выполнен поиск по фильтру Валюта (EUR)');
     for (const price of prices) {
       expect(price).toMatch(/EUR$/);
     }
@@ -881,6 +908,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
 
       const cities = await getHotelCities(page);
       expect(cities.length).toBeGreaterThan(0);
+      console.log(`✅ Выполнен поиск по фильтру Город (${selectedCity})`);
       for (const city of cities) {
         expect(city.length).toBeGreaterThan(0);
       }
@@ -906,6 +934,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
 
     const hotels = await searchAndGetHotels(page, searchPage);
     if (!hotels) { test.skip(true, 'Нет туров для Турции с 3*'); return; }
+    console.log('✅ Выполнен поиск по фильтру Категория отеля (3*)');
 
     for (const hotel of hotels) {
       expect(hotel).toMatch(/3\*/);
@@ -923,6 +952,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
 
     const hotels = await searchAndGetHotels(page, searchPage);
     if (!hotels) { test.skip(true, 'Нет туров для Турции с 5*'); return; }
+    console.log('✅ Выполнен поиск по фильтру Категория отеля (5*)');
 
     for (const hotel of hotels) {
       expect(hotel).toMatch(/5\*/);
@@ -971,6 +1001,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
 
       const hotels = await getResultHotelNames(page);
       expect(hotels.length).toBeGreaterThan(0);
+
+      console.log(`✅ Выполнен поиск по фильтру Гостиница (${picked.map(h => h.text).join(', ')})`);
 
       for (const hotel of hotels) {
         const found = picked.some(h => hotel.startsWith(h.text));
@@ -1021,6 +1053,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
 
       const meals = await getResultMeals(page);
       expect(meals.length).toBeGreaterThan(0);
+
+      console.log(`✅ Выполнен поиск по фильтру Питание (${picked.code})`);
 
       for (const meal of meals) {
         expect(meal).toContain(picked.expected);
@@ -1075,6 +1109,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
       });
     });
 
+    console.log('✅ Выполнен поиск по фильтру Есть места на рейсы');
     for (let i = 0; i < priceInfo.length; i++) {
       expect(priceInfo[i].hasClickable).toBeTruthy();
     }
@@ -1105,6 +1140,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     expect(hasResultsChecked).toBeTruthy();
 
     const anyRed = await hasRedRows(page);
+    console.log('✅ Выполнен поиск по фильтру Нет остановки продажи');
     expect(anyRed).toBeFalsy();
   });
 
@@ -1141,6 +1177,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     }
 
     const allClasses = await getResultRowClasses(page);
+    console.log('✅ Выполнен поиск по фильтру Мгновенное подтверждение');
     for (const classList of allClasses) {
       expect(classList).toContain('green_row');
     }
@@ -1183,6 +1220,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
       return Array.from(cells).map(c => c.textContent.trim());
     });
 
+    console.log('✅ Выполнен поиск по фильтру Не отображать PROMO');
     for (const text of tourTexts) {
       expect(text).not.toContain('PROMO');
     }
@@ -1273,6 +1311,8 @@ test.describe('Фильтры страницы "Туры с перелетом"'
       expect(item.classList).toContain('expand');
       expect(item.classList).not.toContain('bron');
     }
+
+    console.log('✅ Выполнен поиск по фильтру Группировать результаты');
   });
 
   });
@@ -1325,6 +1365,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     }
 
     // Фильтр должен уменьшить количество результатов
+    console.log('✅ Выполнен поиск по фильтру Цена до (фиксированное значение 130000)');
     expect(countWithFilter).toBeLessThanOrEqual(countWithoutFilter);
   });
 
@@ -1391,6 +1432,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     }
 
     // Фильтр должен уменьшить количество результатов
+    console.log(`✅ Выполнен поиск по фильтру Цена до (динамическое среднее значение ${avgPrice})`);
     expect(countWithFilter).toBeLessThanOrEqual(countWithoutFilter);
   });
 
@@ -1444,6 +1486,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     }
 
     // Фильтр должен уменьшить количество результатов
+    console.log('✅ Выполнен поиск по фильтру Цена от (фиксированное значение 100000)');
     expect(countWithFilter).toBeLessThanOrEqual(countWithoutFilter);
   });
 
@@ -1510,6 +1553,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     }
 
     // Фильтр должен уменьшить количество результатов
+    console.log(`✅ Выполнен поиск по фильтру Цена от (динамическое среднее значение ${avgPrice})`);
     expect(countWithFilter).toBeLessThanOrEqual(countWithoutFilter);
   });
 
