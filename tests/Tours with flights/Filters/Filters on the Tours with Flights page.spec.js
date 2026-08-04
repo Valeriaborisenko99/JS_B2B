@@ -1149,7 +1149,7 @@ test.describe('Фильтры страницы "Туры с перелетом"'
   // ===== 19. Мгновенное подтверждение =====
   test.describe('19. Мгновенное подтверждение', () => {
 
-  test('Мгновенное подтверждение: все туры подсвечены зелёным', async ({ page }) => {
+  test('Мгновенное подтверждение: с фильтром все туры зелёные, без фильтра — подсветка разная', async ({ page }) => {
     const searchPage = new SearchTourPage(page);
 
     await searchPage.gotoWithCountry(countryToValue['Турция']);
@@ -1181,6 +1181,32 @@ test.describe('Фильтры страницы "Туры с перелетом"'
     for (const classList of allClasses) {
       expect(classList).toContain('green_row');
     }
+
+    await page.locator('input.MOMENT_CONFIRM').click({ force: true });
+    await page.waitForTimeout(1000);
+
+    await searchPage.clickSearch();
+    await page.waitForTimeout(3000);
+
+    try {
+      await searchPage.waitForResults();
+    } catch {
+      test.skip(true, 'Нет результатов');
+      return;
+    }
+
+    await page.waitForTimeout(3000);
+
+    const rowCountAfterUncheck = await searchPage.getResultRowCount();
+    if (rowCountAfterUncheck === 0) {
+      test.skip(true, 'Нет результатов');
+      return;
+    }
+
+    const allClassesAfterUncheck = await getResultRowClasses(page);
+    console.log('✅ Снят фильтр Мгновенное подтверждение');
+    const hasNotGreen = allClassesAfterUncheck.some(classList => !classList.includes('green_row'));
+    expect(hasNotGreen).toBeTruthy();
   });
 
   });
