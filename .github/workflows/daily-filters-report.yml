@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     container:
-      image: node:${{ env.NODE_VERSION }}
+      image: node:20
 
     steps:
       - name: Установка git
